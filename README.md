@@ -1,4 +1,4 @@
-# PK Eventos · COIL UIDE 🇪🇨 – UFPSO 🇨🇴
+# PK Eventos · COIL UIDE – UFPSO – SER
 
 Sistema web de gestión de eventos, asistentes y servicios desarrollado en el proyecto COIL entre la
 Universidad Internacional del Ecuador (UIDE) y la Universidad Francisco de Paula Santander Ocaña (UFPSO).
