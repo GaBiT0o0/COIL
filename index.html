@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PK Eventos - Sistema de Gestión</title>
+
+    <!-- Tipografía e íconos -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <!-- Enlace correcto a la carpeta css -->
+    <link rel="stylesheet" href="./css/styles.css">
+</head>
+<body>
+
+    <!-- Menú Lateral / Navegación -->
+    <aside class="sidebar" id="sidebar">
+        <div class="brand">
+            <span class="brand-logo"><i class="fa-solid fa-calendar-check"></i></span>
+            <h2>PK <span>Eventos</span></h2>
+        </div>
+
+        <p class="nav-label">Menú principal</p>
+        <nav>
+            <button class="nav-btn active" onclick="switchTab('dashboard', event)"><i class="fa-solid fa-gauge-high"></i> Dashboard</button>
+            <button class="nav-btn" onclick="switchTab('events', event)"><i class="fa-solid fa-calendar-days"></i> Eventos</button>
+            <button class="nav-btn" onclick="switchTab('assistants', event)"><i class="fa-solid fa-users"></i> Asistentes</button>
+            <button class="nav-btn" onclick="switchTab('services', event)"><i class="fa-solid fa-briefcase"></i> Servicios</button>
+        </nav>
+
+        <div class="sidebar-footer">
+            <span class="flags">🇪🇨 🇨🇴</span>
+            <small>COIL UIDE · UFPSO</small>
+        </div>
+    </aside>
+
+    <!-- Fondo oscuro del menú en celulares -->
+    <div class="sidebar-backdrop" onclick="document.body.classList.remove('menu-open')"></div>
+
+    <!-- Contenido Principal -->
+    <main class="content">
+
+        <!-- Barra superior -->
+        <div class="topbar">
+            <button class="menu-toggle" onclick="document.body.classList.toggle('menu-open')" aria-label="Abrir menú">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+            <span class="topbar-title">Sistema de Gestión</span>
+            <div class="topbar-user">
+                <span class="avatar">A</span>
+                <span class="user-name">Administrador</span>
+            </div>
+        </div>
+
+        <!-- VISTA: DASHBOARD -->
+        <section id="tab-dashboard" class="tab-content active">
+            <header class="section-header">
+                <div>
+                    <h1>Panel de Control</h1>
+                    <p class="subtitle">Resumen general del sistema</p>
+                </div>
+            </header>
+
+            <div class="metrics-grid">
+                <div class="card metric-card metric-blue">
+                    <div class="metric-info">
+                        <h3>Total Eventos</h3>
+                        <p id="total-events-count">0</p>
+                    </div>
+                    <i class="fa-solid fa-calendar-days metric-icon"></i>
+                </div>
+                <div class="card metric-card metric-green">
+                    <div class="metric-info">
+                        <h3>Total Asistentes</h3>
+                        <p id="total-assistants-count">0</p>
+                    </div>
+                    <i class="fa-solid fa-users metric-icon"></i>
+                </div>
+                <div class="card metric-card metric-amber">
+                    <div class="metric-info">
+                        <h3>Total Servicios</h3>
+                        <p id="total-services-count">0</p>
+                    </div>
+                    <i class="fa-solid fa-briefcase metric-icon"></i>
+                </div>
+                <div class="card metric-card metric-red">
+                    <div class="metric-info">
+                        <h3>Presupuesto Total</h3>
+                        <p id="total-budget-count">$0</p>
+                    </div>
+                    <i class="fa-solid fa-sack-dollar metric-icon"></i>
+                </div>
+            </div>
+        </section>
+
+        <!-- VISTA: EVENTOS -->
+        <section id="tab-events" class="tab-content">
+            <header class="section-header">
+                <div>
+                    <h1>Gestión de Eventos</h1>
+                    <p class="subtitle">Crea, edita y elimina los eventos registrados</p>
+                </div>
+                <button class="btn btn-primary" onclick="openEventModal()"><i class="fa-solid fa-plus"></i> Nuevo Evento</button>
+            </header>
+
+            <div class="card table-card">
+                <div class="card-header">Listado de Eventos</div>
+                <div class="table-wrap">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Fecha</th>
+                                <th>Ubicación</th>
+                                <th>Capacidad</th>
+                                <th>Presupuesto</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="events-table-body"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- VISTA: ASISTENTES -->
+        <section id="tab-assistants" class="tab-content">
+            <header class="section-header">
+                <div>
+                    <h1>Gestión de Asistentes</h1>
+                    <p class="subtitle">Personas inscritas y su evento asignado</p>
+                </div>
+                <button class="btn btn-primary" onclick="openAssistantModal()"><i class="fa-solid fa-user-plus"></i> Registrar Asistente</button>
+            </header>
+
+            <div class="card table-card">
+                <div class="card-header">Listado de Asistentes</div>
+                <div class="table-wrap">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Email</th>
+                                <th>Teléfono</th>
+                                <th>Evento Asignado</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="assistants-table-body"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- VISTA: SERVICIOS -->
+        <section id="tab-services" class="tab-content">
+            <header class="section-header">
+                <div>
+                    <h1>Catálogo de Servicios</h1>
+                    <p class="subtitle">Proveedores y costos disponibles</p>
+                </div>
+                <button class="btn btn-primary" onclick="openServiceModal()"><i class="fa-solid fa-plus"></i> Nuevo Servicio</button>
+            </header>
+
+            <div class="card table-card">
+                <div class="card-header">Listado de Servicios</div>
+                <div class="table-wrap">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Servicio</th>
+                                <th>Proveedor</th>
+                                <th>Costo</th>
+                                <th>Descripción</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="services-table-body"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- MODAL DE CREACIÓN / EDICIÓN -->
+    <div id="modal-container" class="modal-overlay">
+        <div class="modal-card">
+            <header class="modal-header">
+                <h3 id="modal-title">Formulario</h3>
+                <button class="close-btn" onclick="closeModal()" aria-label="Cerrar">&times;</button>
+            </header>
+            <form id="generic-form" onsubmit="handleFormSubmit(event)">
+                <div id="form-fields" class="form-body"></div>
+                <footer class="modal-footer">
+                    <button type="submit" class="btn btn-primary"><i class="fa-solid fa-floppy-disk"></i> Guardar Datos</button>
+                    <button type="button" class="btn btn-danger" onclick="closeModal()">Cancelar</button>
+                </footer>
+            </form>
+        </div>
+    </div>
+
+    <!-- Enlace correcto a la carpeta js -->
+    <script src="./js/app.js"></script>
+</body>
+</html>
