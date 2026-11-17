@@ -1,7 +1,8 @@
-# PK Eventos · COIL UIDE – UFPSO – SER
+# PK Eventos · COIL UIDE – UFPSO – ISER
 
 Sistema web de gestión de eventos, asistentes y servicios desarrollado en el proyecto COIL entre la
-Universidad Internacional del Ecuador (UIDE) y la Universidad Francisco de Paula Santander Ocaña (UFPSO).
+Universidad Internacional del Ecuador (UIDE), la Universidad Francisco de Paula Santander Ocaña (UFPSO)
+y el Instituto Superior de Educación Rural (ISER).
 
 ## Tecnologías
 - HTML5, CSS3 y JavaScript (sin frameworks)
@@ -36,3 +37,4 @@ Abrir `index.html` con Live Server en VS Code (o doble clic en el archivo).
 |---|---|---|
 | Gabriel Terán | UIDE | Frontend |
 |  | UFPSO |  |
+|  | ISER |  |
