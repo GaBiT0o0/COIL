@@ -15,6 +15,100 @@
 </head>
 <body>
 
+    <section class="auth-screen" id="auth-screen" aria-label="Autenticación">
+        <div class="auth-card">
+            <header class="auth-brand">
+                <h1>PK <span>Eventos</span></h1>
+            </header>
+
+            <div class="auth-view" id="login-view">
+                <p class="auth-message">Inicia sesión para comenzar</p>
+                <form id="login-form">
+                    <label class="auth-input">
+                        <span class="sr-only">Correo electrónico</span>
+                        <input type="email" name="email" placeholder="Correo electrónico" autocomplete="email" required>
+                        <i class="fa-solid fa-envelope" aria-hidden="true"></i>
+                    </label>
+                    <label class="auth-input">
+                        <span class="sr-only">Contraseña</span>
+                        <input type="password" name="password" placeholder="Contraseña" autocomplete="current-password" required>
+                        <i class="fa-solid fa-lock" aria-hidden="true"></i>
+                    </label>
+                    <div class="auth-options">
+                        <label class="auth-checkbox"><input type="checkbox" name="remember"> Recordarme</label>
+                        <button class="btn btn-primary" type="submit">Iniciar sesión</button>
+                    </div>
+                </form>
+                <p class="auth-link"><button type="button" data-auth-view="recover">Olvidé mi contraseña</button></p>
+                <p class="auth-link"><button type="button" data-auth-view="register">Crear una cuenta</button></p>
+            </div>
+
+            <div class="auth-view" id="register-view" hidden>
+                <p class="auth-message">Registra una nueva cuenta</p>
+                <form id="register-form">
+                    <label class="auth-input">
+                        <span class="sr-only">Nombre completo</span>
+                        <input type="text" name="name" placeholder="Nombre completo" autocomplete="name" required>
+                        <i class="fa-solid fa-user" aria-hidden="true"></i>
+                    </label>
+                    <label class="auth-input">
+                        <span class="sr-only">Correo electrónico</span>
+                        <input type="email" name="email" placeholder="Correo electrónico" autocomplete="email" required>
+                        <i class="fa-solid fa-envelope" aria-hidden="true"></i>
+                    </label>
+                    <label class="auth-input">
+                        <span class="sr-only">Contraseña</span>
+                        <input type="password" name="password" placeholder="Contraseña (mínimo 6 caracteres)" autocomplete="new-password" minlength="6" required>
+                        <i class="fa-solid fa-lock" aria-hidden="true"></i>
+                    </label>
+                    <label class="auth-input">
+                        <span class="sr-only">Confirmar contraseña</span>
+                        <input type="password" name="confirmPassword" placeholder="Confirmar contraseña" autocomplete="new-password" minlength="6" required>
+                        <i class="fa-solid fa-lock" aria-hidden="true"></i>
+                    </label>
+                    <div class="auth-options">
+                        <label class="auth-checkbox"><input type="checkbox" name="terms" required> Acepto los términos</label>
+                        <button class="btn btn-primary" type="submit">Registrarme</button>
+                    </div>
+                </form>
+                <p class="auth-link"><button type="button" data-auth-view="login">Ya tengo una cuenta</button></p>
+            </div>
+
+            <div class="auth-view" id="recover-view" hidden>
+                <p class="auth-message">Ingresa el correo de tu cuenta para continuar con la recuperación.</p>
+                <form id="recover-form">
+                    <label class="auth-input">
+                        <span class="sr-only">Correo electrónico</span>
+                        <input type="email" name="email" placeholder="Correo electrónico" autocomplete="email" required>
+                        <i class="fa-solid fa-envelope" aria-hidden="true"></i>
+                    </label>
+                    <button class="btn btn-primary auth-submit" type="submit">Continuar</button>
+                </form>
+                <p class="auth-note">Esta demostración no envía correos; la cuenta se guarda solo en este navegador.</p>
+                <p class="auth-link"><button type="button" data-auth-view="login">Volver al inicio de sesión</button></p>
+            </div>
+
+            <div class="auth-view" id="reset-view" hidden>
+                <p class="auth-message">Estás a un paso de recuperar tu contraseña.</p>
+                <form id="reset-form">
+                    <label class="auth-input">
+                        <span class="sr-only">Nueva contraseña</span>
+                        <input type="password" name="password" placeholder="Nueva contraseña" autocomplete="new-password" minlength="6" required>
+                        <i class="fa-solid fa-lock" aria-hidden="true"></i>
+                    </label>
+                    <label class="auth-input">
+                        <span class="sr-only">Confirmar contraseña</span>
+                        <input type="password" name="confirmPassword" placeholder="Confirmar contraseña" autocomplete="new-password" minlength="6" required>
+                        <i class="fa-solid fa-lock" aria-hidden="true"></i>
+                    </label>
+                    <button class="btn btn-primary auth-submit" type="submit">Cambiar contraseña</button>
+                </form>
+                <p class="auth-link"><button type="button" data-auth-view="login">Volver al inicio de sesión</button></p>
+            </div>
+        </div>
+    </section>
+
+    <div class="app-shell" id="app-shell" hidden>
     <!-- Menú Lateral / Navegación -->
     <aside class="sidebar" id="sidebar">
         <div class="brand">
@@ -50,7 +144,8 @@
             <span class="topbar-title">Sistema de Gestión</span>
             <div class="topbar-user">
                 <span class="avatar">A</span>
-                <span class="user-name">Administrador</span>
+                <span class="user-name" id="current-user-name">Administrador</span>
+                <button class="logout-btn" id="logout-button" type="button">Cerrar sesión</button>
             </div>
         </div>
 
@@ -201,6 +296,7 @@
                 </footer>
             </form>
         </div>
+    </div>
     </div>
 
     <!-- Enlace correcto a la carpeta js -->
