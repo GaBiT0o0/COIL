@@ -5,6 +5,165 @@
 
 // ---------- 1. "Base de datos" en localStorage ----------
 const DB_KEY = 'pkEventosDB';
+const USERS_KEY = 'pkEventosUsers';
+const SESSION_KEY = 'pkEventosSession';
+
+let resettingEmail = '';
+
+function cargarUsuarios() {
+    try {
+        const usuarios = JSON.parse(localStorage.getItem(USERS_KEY) || '[]');
+        if (!Array.isArray(usuarios)) throw new Error('Formato de usuarios inválido');
+        return usuarios;
+    } catch (error) {
+        mostrarToast('No se pudieron leer las cuentas guardadas en este navegador', 'danger');
+        return null;
+    }
+}
+
+function guardarUsuarios(usuarios) {
+    try {
+        localStorage.setItem(USERS_KEY, JSON.stringify(usuarios));
+        return true;
+    } catch (error) {
+        mostrarToast('No se pudo guardar la cuenta en este navegador', 'danger');
+        return false;
+    }
+}
+
+function mostrarVistaAuth(vista) {
+    document.querySelectorAll('.auth-view').forEach(elemento => {
+        elemento.hidden = elemento.id !== `${vista}-view`;
+    });
+}
+
+function iniciarSesion(usuario, recordar) {
+    const sesion = JSON.stringify({ email: usuario.email });
+    try {
+        sessionStorage.setItem(SESSION_KEY, sesion);
+        if (recordar) localStorage.setItem(SESSION_KEY, sesion);
+        else localStorage.removeItem(SESSION_KEY);
+    } catch (error) {
+        mostrarToast('No se pudo guardar la sesión en este navegador', 'danger');
+        return;
+    }
+    mostrarAplicacion(usuario);
+}
+
+function mostrarAplicacion(usuario) {
+    document.getElementById('auth-screen').hidden = true;
+    document.getElementById('app-shell').hidden = false;
+    document.getElementById('current-user-name').textContent = usuario.name;
+    document.querySelector('.avatar').textContent = usuario.name.trim().charAt(0).toUpperCase();
+}
+
+function cerrarSesion() {
+    sessionStorage.removeItem(SESSION_KEY);
+    localStorage.removeItem(SESSION_KEY);
+    document.getElementById('app-shell').hidden = true;
+    document.getElementById('auth-screen').hidden = false;
+    document.getElementById('login-form').reset();
+    mostrarVistaAuth('login');
+}
+
+document.querySelectorAll('[data-auth-view]').forEach(button => {
+    button.addEventListener('click', () => mostrarVistaAuth(button.dataset.authView));
+});
+
+document.getElementById('login-form').addEventListener('submit', event => {
+    event.preventDefault();
+    const datos = Object.fromEntries(new FormData(event.currentTarget).entries());
+    const email = String(datos.email).trim().toLowerCase();
+    const usuarios = cargarUsuarios();
+    if (!usuarios) return;
+    const usuario = usuarios.find(cuenta =>
+        cuenta.email === email && cuenta.password === datos.password
+    );
+    if (!usuario) {
+        mostrarToast('Correo o contraseña incorrectos', 'danger');
+        return;
+    }
+    iniciarSesion(usuario, Boolean(datos.remember));
+});
+
+document.getElementById('register-form').addEventListener('submit', event => {
+    event.preventDefault();
+    const form = event.currentTarget;
+    if (!form.checkValidity()) { form.reportValidity(); return; }
+    const datos = Object.fromEntries(new FormData(form).entries());
+    if (datos.password !== datos.confirmPassword) {
+        mostrarToast('Las contraseñas no coinciden', 'danger');
+        return;
+    }
+    const usuarios = cargarUsuarios();
+    if (!usuarios) return;
+    const email = String(datos.email).trim().toLowerCase();
+    if (usuarios.some(cuenta => cuenta.email === email)) {
+        mostrarToast('Ya existe una cuenta con ese correo', 'warning');
+        return;
+    }
+    const usuario = { name: String(datos.name).trim(), email, password: datos.password };
+    if (!guardarUsuarios([...usuarios, usuario])) return;
+    mostrarToast('Cuenta creada. Ya puedes iniciar sesión.');
+    form.reset();
+    mostrarVistaAuth('login');
+});
+
+document.getElementById('recover-form').addEventListener('submit', event => {
+    event.preventDefault();
+    const email = String(new FormData(event.currentTarget).get('email')).trim().toLowerCase();
+    const usuarios = cargarUsuarios();
+    if (!usuarios) return;
+    const usuario = usuarios.find(cuenta => cuenta.email === email);
+    if (!usuario) {
+        mostrarToast('No hay una cuenta registrada con ese correo', 'danger');
+        return;
+    }
+    resettingEmail = email;
+    mostrarVistaAuth('reset');
+});
+
+document.getElementById('reset-form').addEventListener('submit', event => {
+    event.preventDefault();
+    const form = event.currentTarget;
+    if (!form.checkValidity()) { form.reportValidity(); return; }
+    const datos = Object.fromEntries(new FormData(form).entries());
+    if (datos.password !== datos.confirmPassword) {
+        mostrarToast('Las contraseñas no coinciden', 'danger');
+        return;
+    }
+    const usuarios = cargarUsuarios();
+    if (!usuarios) return;
+    const usuario = usuarios.find(cuenta => cuenta.email === resettingEmail);
+    if (!usuario) {
+        mostrarToast('No se encontró la cuenta para recuperar', 'danger');
+        mostrarVistaAuth('recover');
+        return;
+    }
+    usuario.password = datos.password;
+    if (!guardarUsuarios(usuarios)) return;
+    resettingEmail = '';
+    form.reset();
+    mostrarToast('Contraseña actualizada. Ya puedes iniciar sesión.');
+    mostrarVistaAuth('login');
+});
+
+document.getElementById('logout-button').addEventListener('click', cerrarSesion);
+
+function restaurarSesion() {
+    let sesion;
+    try {
+        sesion = JSON.parse(localStorage.getItem(SESSION_KEY) || sessionStorage.getItem(SESSION_KEY) || 'null');
+    } catch (error) {
+        mostrarToast('No se pudo restaurar la sesión guardada', 'danger');
+        return;
+    }
+    if (!sesion || typeof sesion.email !== 'string') return;
+    const usuarios = cargarUsuarios();
+    if (!usuarios) return;
+    const usuario = usuarios.find(cuenta => cuenta.email === sesion.email);
+    if (usuario) mostrarAplicacion(usuario);
+}
 
 const datosIniciales = {
     events: [
@@ -217,6 +376,7 @@ function handleFormSubmit(event) {
 
     guardarDB();
     renderTodo();
+    restaurarSesion();
     closeModal();
 }
 
