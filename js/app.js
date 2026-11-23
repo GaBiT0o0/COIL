@@ -1,8 +1,3 @@
-/* =========================================================
-   PK Eventos — Lógica de la aplicación
-   CRUD de Eventos, Asistentes y Servicios con localStorage
-   ========================================================= */
-
 // ---------- 1. "Base de datos" en localStorage ----------
 const DB_KEY = 'pkEventosDB';
 const USERS_KEY = 'pkEventosUsers';
