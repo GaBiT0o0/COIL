@@ -23,6 +23,7 @@
 
             <div class="auth-view" id="login-view">
                 <p class="auth-message">Inicia sesión para comenzar</p>
+                <p class="auth-demo"><i class="fa-solid fa-circle-info"></i> Cuenta de prueba: <strong>demo@coil.edu</strong> / <strong>coil2026</strong></p>
                 <form id="login-form">
                     <label class="auth-input">
                         <span class="sr-only">Correo electrónico</span>
@@ -122,11 +123,12 @@
             <button class="nav-btn" onclick="switchTab('events', event)"><i class="fa-solid fa-calendar-days"></i> Eventos</button>
             <button class="nav-btn" onclick="switchTab('assistants', event)"><i class="fa-solid fa-users"></i> Asistentes</button>
             <button class="nav-btn" onclick="switchTab('services', event)"><i class="fa-solid fa-briefcase"></i> Servicios</button>
+            <button class="nav-btn" onclick="switchTab('team', event)"><i class="fa-solid fa-earth-americas"></i> Equipo COIL</button>
         </nav>
 
         <div class="sidebar-footer">
             <span class="flags">🇪🇨 🇨🇴</span>
-            <small>COIL UIDE · UFPSO</small>
+            <small>COIL UIDE · UFPSO · ISER</small>
         </div>
     </aside>
 
@@ -201,7 +203,14 @@
             </header>
 
             <div class="card table-card">
-                <div class="card-header">Listado de Eventos</div>
+                <div class="card-header">
+                    <span>Listado de Eventos</span>
+                    <label class="table-search">
+                        <span class="sr-only">Buscar en eventos</span>
+                        <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+                        <input type="search" placeholder="Buscar..." data-search="events-table-body">
+                    </label>
+                </div>
                 <div class="table-wrap">
                     <table class="data-table">
                         <thead>
@@ -231,7 +240,14 @@
             </header>
 
             <div class="card table-card">
-                <div class="card-header">Listado de Asistentes</div>
+                <div class="card-header">
+                    <span>Listado de Asistentes</span>
+                    <label class="table-search">
+                        <span class="sr-only">Buscar en asistentes</span>
+                        <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+                        <input type="search" placeholder="Buscar..." data-search="assistants-table-body">
+                    </label>
+                </div>
                 <div class="table-wrap">
                     <table class="data-table">
                         <thead>
@@ -261,7 +277,14 @@
             </header>
 
             <div class="card table-card">
-                <div class="card-header">Listado de Servicios</div>
+                <div class="card-header">
+                    <span>Listado de Servicios</span>
+                    <label class="table-search">
+                        <span class="sr-only">Buscar en servicios</span>
+                        <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+                        <input type="search" placeholder="Buscar..." data-search="services-table-body">
+                    </label>
+                </div>
                 <div class="table-wrap">
                     <table class="data-table">
                         <thead>
@@ -277,6 +300,46 @@
                     </table>
                 </div>
             </div>
+        </section>
+
+        <!-- VISTA: EQUIPO COIL -->
+        <section id="tab-team" class="tab-content">
+            <header class="section-header">
+                <div>
+                    <h1>Equipo COIL</h1>
+                    <p class="subtitle">Aprendizaje Internacional Colaborativo en Línea · Colombia 🇨🇴 – Ecuador 🇪🇨</p>
+                </div>
+            </header>
+
+            <div class="card coil-info">
+                <div class="coil-info-item">
+                    <i class="fa-solid fa-bullseye"></i>
+                    <div>
+                        <h3>Objetivo</h3>
+                        <p>Desarrollar colaborativamente una propuesta web con HTML, CSS y JavaScript, con formularios de autenticación, registro y gestión de información.</p>
+                    </div>
+                </div>
+                <div class="coil-info-item">
+                    <i class="fa-solid fa-calendar-week"></i>
+                    <div>
+                        <h3>Sesiones</h3>
+                        <p>4 encuentros virtuales por Google Meet, los martes de 7:00 a 9:00 p.m. (13/10 al 03/11/2026).</p>
+                    </div>
+                </div>
+                <div class="coil-info-item">
+                    <i class="fa-solid fa-code"></i>
+                    <div>
+                        <h3>Tecnologías</h3>
+                        <p>HTML5 · CSS3 · JavaScript · localStorage · GitHub</p>
+                    </div>
+                </div>
+            </div>
+
+            <h2 class="team-title">Docentes</h2>
+            <div class="team-grid" id="teachers-grid"></div>
+
+            <h2 class="team-title">Estudiantes</h2>
+            <div class="team-grid" id="students-grid"></div>
         </section>
 
     </main>

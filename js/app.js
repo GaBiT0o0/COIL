@@ -1,14 +1,33 @@
 // ---------- 1. "Base de datos" en localStorage ----------
-const DB_KEY = 'pkEventosDB';
-const USERS_KEY = 'pkEventosUsers';
-const SESSION_KEY = 'pkEventosSession';
+const DB_KEY = 'eventAndesDB';
+const USERS_KEY = 'eventAndesUsers';
+const SESSION_KEY = 'eventAndesSession';
 
 let resettingEmail = '';
+
+// Cuenta de prueba para la presentación (se crea si aún no existe)
+// Lee los campos de un formulario y los devuelve como objeto { nombreDelCampo: valor }
+function leerFormulario(form) {
+    const datos = {};
+    for (let i = 0; i < form.elements.length; i++) {
+        const campo = form.elements[i];
+        if (campo.name) {
+            datos[campo.name] = campo.type === 'checkbox' ? campo.checked : campo.value;
+        }
+    }
+    return datos;
+}
+
+const CUENTA_DEMO = { name: 'Usuario Demo', email: 'demo@coil.edu', password: 'coil2026' };
 
 function cargarUsuarios() {
     try {
         const usuarios = JSON.parse(localStorage.getItem(USERS_KEY) || '[]');
         if (!Array.isArray(usuarios)) throw new Error('Formato de usuarios inválido');
+        if (!usuarios.some(cuenta => cuenta.email === CUENTA_DEMO.email)) {
+            usuarios.push({ name: CUENTA_DEMO.name, email: CUENTA_DEMO.email, password: CUENTA_DEMO.password });
+            try { localStorage.setItem(USERS_KEY, JSON.stringify(usuarios)); } catch (e) { /* sin almacenamiento */ }
+        }
         return usuarios;
     } catch (error) {
         mostrarToast('No se pudieron leer las cuentas guardadas en este navegador', 'danger');
@@ -67,7 +86,7 @@ document.querySelectorAll('[data-auth-view]').forEach(button => {
 
 document.getElementById('login-form').addEventListener('submit', event => {
     event.preventDefault();
-    const datos = Object.fromEntries(new FormData(event.currentTarget).entries());
+    const datos = leerFormulario(event.currentTarget);
     const email = String(datos.email).trim().toLowerCase();
     const usuarios = cargarUsuarios();
     if (!usuarios) return;
@@ -85,7 +104,7 @@ document.getElementById('register-form').addEventListener('submit', event => {
     event.preventDefault();
     const form = event.currentTarget;
     if (!form.checkValidity()) { form.reportValidity(); return; }
-    const datos = Object.fromEntries(new FormData(form).entries());
+    const datos = leerFormulario(form);
     if (datos.password !== datos.confirmPassword) {
         mostrarToast('Las contraseñas no coinciden', 'danger');
         return;
@@ -98,7 +117,8 @@ document.getElementById('register-form').addEventListener('submit', event => {
         return;
     }
     const usuario = { name: String(datos.name).trim(), email, password: datos.password };
-    if (!guardarUsuarios([...usuarios, usuario])) return;
+    usuarios.push(usuario);
+    if (!guardarUsuarios(usuarios)) return;
     mostrarToast('Cuenta creada. Ya puedes iniciar sesión.');
     form.reset();
     mostrarVistaAuth('login');
@@ -122,7 +142,7 @@ document.getElementById('reset-form').addEventListener('submit', event => {
     event.preventDefault();
     const form = event.currentTarget;
     if (!form.checkValidity()) { form.reportValidity(); return; }
-    const datos = Object.fromEntries(new FormData(form).entries());
+    const datos = leerFormulario(form);
     if (datos.password !== datos.confirmPassword) {
         mostrarToast('Las contraseñas no coinciden', 'danger');
         return;
@@ -178,9 +198,9 @@ const datosIniciales = {
 function cargarDB() {
     try {
         const guardado = localStorage.getItem(DB_KEY);
-        return guardado ? JSON.parse(guardado) : structuredClone(datosIniciales);
+        return guardado ? JSON.parse(guardado) : JSON.parse(JSON.stringify(datosIniciales));
     } catch (e) {
-        return structuredClone(datosIniciales);
+        return JSON.parse(JSON.stringify(datosIniciales));
     }
 }
 
@@ -242,7 +262,7 @@ function formatearFecha(iso) {
 
 function escapar(texto) {
     const div = document.createElement('div');
-    div.textContent = texto ?? '';
+    div.textContent = (texto === undefined || texto === null) ? '' : texto;
     return div.innerHTML;
 }
 
@@ -285,6 +305,70 @@ function renderDashboard() {
 function renderTodo() {
     Object.keys(modulos).forEach(renderTabla);
     renderDashboard();
+    aplicarBusquedas();
+}
+
+// ---------- 5.1 Buscador en las tablas ----------
+function filtrarTabla(input) {
+    const texto = input.value.trim().toLowerCase();
+    const tbody = document.getElementById(input.dataset.search);
+    let visibles = 0;
+    tbody.querySelectorAll('tr:not(.no-results)').forEach(fila => {
+        const coincide = fila.textContent.toLowerCase().includes(texto);
+        fila.hidden = !coincide;
+        if (coincide) visibles++;
+    });
+    let aviso = tbody.querySelector('.no-results');
+    if (visibles === 0 && texto) {
+        if (!aviso) {
+            aviso = document.createElement('tr');
+            aviso.className = 'no-results';
+            aviso.innerHTML = '<td colspan="99">No se encontraron resultados</td>';
+            tbody.appendChild(aviso);
+        }
+    } else if (aviso) {
+        aviso.remove();
+    }
+}
+
+function aplicarBusquedas() {
+    document.querySelectorAll('[data-search]').forEach(filtrarTabla);
+}
+
+document.querySelectorAll('[data-search]').forEach(input => {
+    input.addEventListener('input', () => filtrarTabla(input));
+});
+
+// ---------- 5.2 Equipo COIL ----------
+// Para agregar integrantes (por ejemplo, del ISER) basta con añadir una línea aquí.
+const equipo = {
+    docentes: [
+        { nombre: 'Andrés Alfonso Pacheco Solano', universidad: 'UFPSO', pais: 'Colombia', rol: 'Tendencias en Ingeniería de Sistemas' },
+        { nombre: 'Darío Sebastián Cabezas Erazo', universidad: 'UIDE', pais: 'Ecuador', rol: 'Programación Web y Multimedia' }
+    ],
+    estudiantes: [
+        { nombre: 'Gabriel Terán', universidad: 'UIDE', pais: 'Ecuador', rol: 'Frontend' },
+        { nombre: 'Abdul', universidad: 'UFPSO', pais: 'Colombia', rol: 'Lógica y autenticación' },
+        { nombre: 'Karol', universidad: 'UFPSO', pais: 'Colombia', rol: 'Diseño UI/UX y responsive' },
+        { nombre: 'Juan David', universidad: 'UFPSO', pais: 'Colombia', rol: 'QA, pruebas y documentación' }
+    ]
+};
+
+const banderas = { Colombia: '🇨🇴', Ecuador: '🇪🇨' };
+
+function tarjetaPersona(p) {
+    const iniciales = p.nombre.split(' ').slice(0, 2).map(n => n[0]).join('').toUpperCase();
+    return `<article class="card team-card">
+        <span class="team-avatar ${p.pais === 'Ecuador' ? 'ec' : 'co'}">${escapar(iniciales)}</span>
+        <h3>${escapar(p.nombre)}</h3>
+        <p class="team-role">${escapar(p.rol)}</p>
+        <p class="team-uni">${banderas[p.pais] || ''} ${escapar(p.universidad)} · ${escapar(p.pais)}</p>
+    </article>`;
+}
+
+function renderEquipo() {
+    document.getElementById('teachers-grid').innerHTML = equipo.docentes.map(tarjetaPersona).join('');
+    document.getElementById('students-grid').innerHTML = equipo.estudiantes.map(tarjetaPersona).join('');
 }
 
 // ---------- 6. Modal de Agregar / Editar ----------
@@ -314,7 +398,7 @@ function crearCampo(campo, valor = '') {
     }
 
     const ancho = campo.type === 'textarea' ? 'full' : '';
-    return `<div class="form-group ${ancho}"><label>${campo.label}</label>${control}</div>`;
+    return `<div class="form-group ${ancho}"><label class="${campo.required ? 'required' : ''}">${campo.label}</label>${control}</div>`;
 }
 
 function abrirModal(tipo, id = null) {
@@ -324,7 +408,7 @@ function abrirModal(tipo, id = null) {
     const registro = id ? db[tipo].find(r => r.id === id) : {};
 
     document.getElementById('modal-title').textContent = (id ? 'Editar ' : 'Nuevo ') + mod.titulo;
-    document.getElementById('form-fields').innerHTML = mod.campos.map(c => crearCampo(c, registro[c.name] ?? '')).join('');
+    document.getElementById('form-fields').innerHTML = mod.campos.map(c => crearCampo(c, registro[c.name] === undefined ? '' : registro[c.name])).join('');
     document.querySelector('#generic-form button[type="submit"]').innerHTML =
         `<i class="fa-solid fa-floppy-disk"></i> ${id ? 'Actualizar' : 'Registrar'}`;
 
@@ -352,7 +436,7 @@ function handleFormSubmit(event) {
     const form = event.target;
     if (!form.checkValidity()) { form.reportValidity(); return; }
 
-    const datos = Object.fromEntries(new FormData(form).entries());
+    const datos = leerFormulario(form);
     modulos[moduloActual].campos.forEach(c => {
         if (c.type === 'number') datos[c.name] = Number(datos[c.name]);
         else datos[c.name] = (datos[c.name] || '').trim();
@@ -361,11 +445,17 @@ function handleFormSubmit(event) {
     const lista = db[moduloActual];
     if (idEditando) {
         const i = lista.findIndex(r => r.id === idEditando);
-        lista[i] = { ...lista[i], ...datos };
+        for (const clave in datos) {
+            lista[i][clave] = datos[clave];
+        }
         mostrarToast(`${modulos[moduloActual].titulo} actualizado correctamente`);
     } else {
-        const nuevoId = lista.length ? Math.max(...lista.map(r => r.id)) + 1 : 1;
-        lista.push({ id: nuevoId, ...datos });
+        let nuevoId = 1;
+        for (const r of lista) {
+            if (r.id >= nuevoId) nuevoId = r.id + 1;
+        }
+        datos.id = nuevoId;
+        lista.push(datos);
         mostrarToast(`${modulos[moduloActual].titulo} registrado correctamente`);
     }
 
@@ -442,4 +532,27 @@ document.getElementById('modal-container').addEventListener('click', e => {
     if (e.target.id === 'modal-container') closeModal();
 });
 
+// ---------- 11. Mostrar / ocultar contraseña ----------
+document.querySelectorAll('.auth-input input[type="password"]').forEach(input => {
+    const icono = input.parentElement.querySelector('i');
+    if (!icono) return;
+    icono.className = 'fa-solid fa-eye password-toggle';
+    icono.setAttribute('role', 'button');
+    icono.setAttribute('tabindex', '0');
+    icono.setAttribute('aria-label', 'Mostrar contraseña');
+    icono.removeAttribute('aria-hidden');
+    const alternar = () => {
+        const oculto = input.type === 'password';
+        input.type = oculto ? 'text' : 'password';
+        icono.className = `fa-solid ${oculto ? 'fa-eye-slash' : 'fa-eye'} password-toggle`;
+        icono.setAttribute('aria-label', oculto ? 'Ocultar contraseña' : 'Mostrar contraseña');
+    };
+    icono.addEventListener('click', alternar);
+    icono.addEventListener('keydown', e => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); alternar(); }
+    });
+});
+
+renderEquipo();
 renderTodo();
+restaurarSesion(); // mantiene la sesión abierta si se marcó "Recordarme"

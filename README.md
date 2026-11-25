@@ -1,4 +1,4 @@
-# PK Eventos · COIL UIDE – UFPSO – ISER
+# EventAndes · COIL UIDE – UFPSO – ISER
 
 Sistema web de gestión de eventos, asistentes y servicios desarrollado en el proyecto COIL entre la
 Universidad Internacional del Ecuador (UIDE), la Universidad Francisco de Paula Santander Ocaña (UFPSO)
@@ -11,10 +11,18 @@ y el Instituto Superior de Educación Rural (ISER).
 
 ## Funcionalidades
 - Inicio de sesión, registro y recuperación de contraseña de demostración
+- Cuenta de prueba: `demo@coil.edu` / `coil2026`
+- Botón para mostrar u ocultar la contraseña
+- Cuenta de prueba: `demo@coil.edu` / `coil2026`
+- Botón para mostrar u ocultar la contraseña
 - Dashboard con métricas (eventos, asistentes, servicios y presupuesto total)
 - CRUD completo (Listar, Agregar, Editar, Eliminar) en Eventos, Asistentes y Servicios
 - Confirmación antes de eliminar y notificaciones tipo toast
 - Cambio de estado Activo/Inactivo con un clic
+- Buscador en vivo en cada tabla
+- Sección "Equipo COIL" con docentes e integrantes de cada universidad
+- Buscador en vivo en cada tabla
+- Sección "Equipo COIL" con docentes e integrantes de cada universidad
 - Validación de formularios y diseño responsive (celular, tablet y PC)
 
 > La autenticación no usa servidor ni base de datos. Las cuentas y contraseñas se guardan en `localStorage` del navegador; la recuperación solo permite cambiar la contraseña localmente y no verifica identidad ni envía correos. No usar con datos reales ni como mecanismo de seguridad.
